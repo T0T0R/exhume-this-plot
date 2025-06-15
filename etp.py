@@ -413,7 +413,10 @@ def analyze_picture(filename):
                 if pygame.key.get_pressed()[pygame.K_LCTRL] or pygame.key.get_pressed()[pygame.K_RCTRL]:
                     zoom_factor = max(0, zoom_factor + event.y*0.1)
                 else:
-                    series_marker_size[working_series] = max(1, series_marker_size[working_series] + event.y)
+                    if interface_mode == mode.normal:
+                        series_marker_size[working_series] = max(1, series_marker_size[working_series] + event.y)
+                    elif interface_mode == mode.edit:
+                        series_marker_size[edit_seriesNo_itemNo[0]] = max(1, series_marker_size[edit_seriesNo_itemNo[0]] + event.y)
 
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
