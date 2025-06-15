@@ -355,7 +355,7 @@ def analyze_picture(filename):
         elif interface_mode == mode.edit:
             text_string_a = "ESCAPE: NORMAL mode   LEFT (+SHIFT): previous data point   RIGHT (+SHIFT): next data point   HOME: first data point   END: last data point"
             text_string_b = "CTRL+Wheel: zoom   WASD: Move data point"
-            text_string_c = "   SHIFT+HOME: first series   SHIFT+END: last series"
+            text_string_c = "SHIFT+HOME: first series   SHIFT+END: last series"
             text_string_d = "SUPPR: Remove data point   SHIFT+SUPPR: Remove data series   DOWN (+SHIFT): next series   UP (+SHIFT): previous series"
             text_string_e = "H: hide/show controls"
 
