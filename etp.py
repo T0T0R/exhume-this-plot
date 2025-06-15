@@ -54,7 +54,7 @@ def analyze_picture(filename):
     """The whole analysis for one image"""
 
     pygame.init()
-    screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
+    screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE | pygame.HWSURFACE | pygame.DOUBLEBUF)
     pygame.display.set_caption("Exhume This Plot")
     clock = pygame.time.Clock()
     running = True
@@ -185,14 +185,11 @@ def analyze_picture(filename):
         return gcoords[0], gcoords[1]
 
 
-    def draw_marker(surface, zoom_factor, screen_gcoord, coord, col, marker_size, marker_type, width=0, position=False):
-        """Draw a data marker on the screen."""
-
-        # If position==True, screen position is passed instead of gcoord.
-        if not position:
-            center_pos = gcoord_to_pos(coord, zoom_factor, screen_gcoord)
-        else:
-            center_pos = screen_gcoord
+    def draw_marker_sprite(marker_size, zoom_factor, marker_type, col, width=0):
+        """"Return a surface containing the marker shape."""
+        
+        surface = pygame.Surface((2 * marker_size * zoom_factor, 2 * marker_size * zoom_factor), pygame.SRCALPHA)
+        center_pos = (marker_size, marker_size)
 
         if marker_type == marker.circle:
             pygame.draw.circle(surface, col, center_pos, marker_size * zoom_factor, width)
@@ -216,6 +213,22 @@ def analyze_picture(filename):
             left_pos    = (center_pos[0] - marker_size * zoom_factor * 0.86603, center_pos[1] - marker_size * zoom_factor * 0.5)
             bottom_pos     = (center_pos[0], center_pos[1] + marker_size * zoom_factor)
             pygame.draw.polygon(surface, col, [right_pos, bottom_pos, left_pos], width)
+
+        return surface
+
+
+    def draw_marker(screen, zoom_factor, screen_gcoord, coord, col, marker_size, marker_type, width=0, position=False):
+        """Draw a data marker on the screen."""
+
+        # If position==True, screen position is passed instead of gcoord.
+        if not position:
+            center_pos = pygame.Vector2(gcoord_to_pos(coord, zoom_factor, screen_gcoord)) - pygame.Vector2(marker_size, marker_size)
+        else:
+            center_pos = pygame.Vector2(screen_gcoord) - pygame.Vector2(marker_size, marker_size)
+            
+        marker_surface = draw_marker_sprite(marker_size, zoom_factor, marker_type, col, width)
+        screen.blit(marker_surface, center_pos)
+        
         
 
     def draw_data_markers(seriesNo_itemNo, zoom_factor, screen_gcoord, interface_mode=mode.normal):
@@ -234,9 +247,8 @@ def analyze_picture(filename):
 
             col.hsva = (i*350/len(data_gcoord), 90, 90, alpha)   # Change marker color according to the series.
             for coord in series_coord:
-                draw_marker(s, zoom_factor, screen_gcoord, coord, col, series_marker_size[i], series_marker_shape[i])
+                draw_marker(screen, zoom_factor, screen_gcoord, coord, col, series_marker_size[i], series_marker_shape[i])
 
-        screen.blit(s, (0,0))
         return
 
 
@@ -364,6 +376,26 @@ def analyze_picture(filename):
                 
             screen.blit(s, (0,0))
 
+
+    def update_screen():
+        """Update teh screen."""
+        
+        screen.fill("grey")
+        sized_graph = pygame.transform.scale_by(asurf, zoom_factor)
+        screen.blit(sized_graph, gcoord_to_pos((0,0), zoom_factor, screen_gcoord))
+        draw_axes(zoom_factor, screen_gcoord)
+        draw_data_markers(edit_seriesNo_itemNo, zoom_factor, screen_gcoord, interface_mode)
+
+        if interface_mode == mode.edit:
+            draw_markers_overlay(edit_seriesNo_itemNo, zoom_factor, screen_gcoord)
+        else:
+            draw_mouse_overlay(zoom_factor, series_marker_size[working_series], series_marker_shape[working_series])
+            pass
+        draw_controls_overlay(interface_mode, display_controls)
+
+        pygame.display.flip()
+
+
     interface_mode = mode.normal
     display_controls = True
 
@@ -372,7 +404,11 @@ def analyze_picture(filename):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                
+            
+            if event.type == pygame.MOUSEMOTION:    # Drop all mouse motion events
+                continue
+            
+            
             elif event.type == pygame.MOUSEWHEEL:
                 if pygame.key.get_pressed()[pygame.K_LCTRL] or pygame.key.get_pressed()[pygame.K_RCTRL]:
                     zoom_factor = max(0, zoom_factor + event.y*0.1)
@@ -536,23 +572,12 @@ def analyze_picture(filename):
                 elif event.key == pygame.K_h:
                     display_controls = not display_controls
 
-            if running:
-                screen.fill("grey")
-                sized_graph = pygame.transform.scale_by(asurf, zoom_factor)
-                screen.blit(sized_graph, gcoord_to_pos((0,0), zoom_factor, screen_gcoord))
-                draw_axes(zoom_factor, screen_gcoord)
-                draw_data_markers(edit_seriesNo_itemNo, zoom_factor, screen_gcoord, interface_mode)
-
-                if interface_mode == mode.edit:
-                    draw_markers_overlay(edit_seriesNo_itemNo, zoom_factor, screen_gcoord)
-                else:
-                    draw_mouse_overlay(zoom_factor, series_marker_size[working_series], series_marker_shape[working_series])
-                draw_controls_overlay(interface_mode, display_controls)
-
-                pygame.display.flip()
+            if running and event.type != pygame.MOUSEMOTION:    # Don't draw all the screen each time the mouse is moved.
+                update_screen()
 
 
         dt = clock.tick(60) / 1000
+        update_screen() # Draw the screen to take into account the new position of the mouse.
 
     pygame.quit()
 
