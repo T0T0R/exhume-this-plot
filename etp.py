@@ -30,6 +30,7 @@ from enum import Enum, auto, IntEnum
 import numpy
 
 
+
 class mode(Enum):
     normal = auto()
     edit = auto()
@@ -54,7 +55,7 @@ def analyze_picture(filename):
     """The whole analysis for one image"""
 
     pygame.init()
-    screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE | pygame.HWSURFACE | pygame.DOUBLEBUF)
+    screen = pygame.display.set_mode((1000, 1000), pygame.RESIZABLE | pygame.HWSURFACE | pygame.DOUBLEBUF)
     pygame.display.set_caption("Exhume This Plot")
     clock = pygame.time.Clock()
     running = True
@@ -110,14 +111,14 @@ def analyze_picture(filename):
 
     def gcoord_to_pos(gcoord, zoom_factor, screen_gcoord):
         """Return the position on the screen from the global coordinates."""
-        return pygame.math.Vector2(int(gcoord[0] * zoom_factor - screen_gcoord[0]),
-                                int(gcoord[1] * zoom_factor - screen_gcoord[1]))
+        return pygame.math.Vector2((gcoord[0] - screen_gcoord[0]) * zoom_factor,
+                                (gcoord[1]- screen_gcoord[1]) * zoom_factor)
 
 
     def pos_to_gcoord(pos, zoom_factor, screen_gcoord):
         """Return the global coordinates from the position on the screen."""
-        return (int((pos[0] + screen_gcoord[0]) / zoom_factor),
-                int((pos[1] + screen_gcoord[1]) / zoom_factor))
+        return ((pos[0] / zoom_factor + screen_gcoord[0]) ,
+                (pos[1] / zoom_factor + screen_gcoord[1]))
 
 
     def ask_axis(type, zoom_factor, screen_gcoord):
@@ -185,11 +186,10 @@ def analyze_picture(filename):
         return gcoords[0], gcoords[1]
 
 
-    def draw_marker_sprite(marker_size, zoom_factor, marker_type, col, width=0):
+    def draw_single_marker_surface(marker_size, zoom_factor, marker_type, center_pos, col, width=0):
         """"Return a surface containing the marker shape."""
         
-        surface = pygame.Surface((2 * marker_size * zoom_factor, 2 * marker_size * zoom_factor), pygame.SRCALPHA)
-        center_pos = (marker_size * zoom_factor, marker_size * zoom_factor)
+        surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
 
         if marker_type == marker.circle:
             pygame.draw.circle(surface, col, center_pos, marker_size * zoom_factor, width)
@@ -222,12 +222,12 @@ def analyze_picture(filename):
 
         # If position==True, screen position is passed instead of gcoord.
         if not position:
-            center_pos = pygame.Vector2(gcoord_to_pos(coord, zoom_factor, screen_gcoord)) - pygame.Vector2(marker_size, marker_size)
+            center_pos = pygame.Vector2(gcoord_to_pos(coord, zoom_factor, screen_gcoord))
         else:
-            center_pos = pygame.Vector2(screen_gcoord) - pygame.Vector2(marker_size, marker_size)
+            center_pos = pygame.Vector2(coord) - pygame.Vector2(1,1)*marker_size*zoom_factor
             
-        marker_surface = draw_marker_sprite(marker_size, zoom_factor, marker_type, col, width)
-        screen.blit(marker_surface, center_pos)
+        marker_surface = draw_single_marker_surface(marker_size, zoom_factor, marker_type, center_pos, col, width)
+        screen.blit(marker_surface, (0,0))
         
         
 
