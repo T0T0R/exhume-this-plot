@@ -189,6 +189,7 @@ def analyze_picture(filename):
         """"Return a surface containing the marker shape."""
         
         surface = pygame.Surface((2 * marker_size * zoom_factor, 2 * marker_size * zoom_factor), pygame.SRCALPHA)
+        surface.fill((255, 0, 255))
         center_pos = (marker_size, marker_size)
 
         if marker_type == marker.circle:
