@@ -189,8 +189,7 @@ def analyze_picture(filename):
         """"Return a surface containing the marker shape."""
         
         surface = pygame.Surface((2 * marker_size * zoom_factor, 2 * marker_size * zoom_factor), pygame.SRCALPHA)
-        surface.fill((255, 0, 255))
-        center_pos = (marker_size, marker_size)
+        center_pos = (marker_size * zoom_factor, marker_size * zoom_factor)
 
         if marker_type == marker.circle:
             pygame.draw.circle(surface, col, center_pos, marker_size * zoom_factor, width)
@@ -356,7 +355,7 @@ def analyze_picture(filename):
         elif interface_mode == mode.edit:
             text_string_a = "ESCAPE: NORMAL mode   LEFT (+SHIFT): previous data point   RIGHT (+SHIFT): next data point   HOME: first data point   END: last data point"
             text_string_b = "CTRL+Wheel: zoom   WASD: Move data point"
-            text_string_c = "SHIFT+HOME: first series   SHIFT+END: last series"
+            text_string_c = "   SHIFT+HOME: first series   SHIFT+END: last series"
             text_string_d = "SUPPR: Remove data point   SHIFT+SUPPR: Remove data series   DOWN (+SHIFT): next series   UP (+SHIFT): previous series"
             text_string_e = "H: hide/show controls"
 
