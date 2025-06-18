@@ -378,7 +378,7 @@ def analyze_picture(filename):
 
 
     def update_screen():
-        """Update teh screen."""
+        """Update the screen."""
         
         screen.fill("grey")
         sized_graph = pygame.transform.scale_by(asurf, zoom_factor)
