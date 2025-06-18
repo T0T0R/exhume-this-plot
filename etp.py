@@ -354,8 +354,8 @@ def analyze_picture(filename):
             
         elif interface_mode == mode.edit:
             text_string_a = "ESCAPE: NORMAL mode   LEFT (+SHIFT): previous data point   RIGHT (+SHIFT): next data point   HOME: first data point   END: last data point"
-            text_string_b = "CTRL+Wheel: zoom   WASD: Move data point"
-            text_string_c = "   SHIFT+HOME: first series   SHIFT+END: last series"
+            text_string_b = "CTRL+Wheel: zoom   WASD: Move data point   WASD+ALT: Move series"
+            text_string_c = "SHIFT+HOME: first series   SHIFT+END: last series"
             text_string_d = "SUPPR: Remove data point   SHIFT+SUPPR: Remove data series   DOWN (+SHIFT): next series   UP (+SHIFT): previous series"
             text_string_e = "H: hide/show controls"
 
@@ -532,25 +532,41 @@ def analyze_picture(filename):
                         
                 elif event.key == pygame.K_w:
                     if interface_mode == mode.edit:
-                        x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
-                        data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord, y_gcoord - 1)
+                        if pygame.key.get_pressed()[pygame.K_LALT]:
+                            for data_no, (x_gcoord, y_gcoord) in enumerate(data_gcoord[edit_seriesNo_itemNo[0]]):
+                                data_gcoord[edit_seriesNo_itemNo[0]][data_no] = (x_gcoord, y_gcoord - 1)
+                        else:
+                            x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
+                            data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord, y_gcoord - 1)
 
                 elif event.key == pygame.K_s:
                     if interface_mode == mode.edit:
-                        x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
-                        data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord, y_gcoord + 1)
+                        if pygame.key.get_pressed()[pygame.K_LALT]:
+                            for data_no, (x_gcoord, y_gcoord) in enumerate(data_gcoord[edit_seriesNo_itemNo[0]]):
+                                data_gcoord[edit_seriesNo_itemNo[0]][data_no] = (x_gcoord, y_gcoord + 1)
+                        else:
+                            x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
+                            data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord, y_gcoord + 1)
                     elif interface_mode == mode.normal:
                         save()
 
                 elif event.key == pygame.K_a:
                     if interface_mode == mode.edit:
-                        x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
-                        data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord - 1, y_gcoord)
+                        if pygame.key.get_pressed()[pygame.K_LALT]:
+                            for data_no, (x_gcoord, y_gcoord) in enumerate(data_gcoord[edit_seriesNo_itemNo[0]]):
+                                data_gcoord[edit_seriesNo_itemNo[0]][data_no] = (x_gcoord - 1, y_gcoord)
+                        else:
+                            x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
+                            data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord - 1, y_gcoord)
 
                 elif event.key == pygame.K_d:
                     if interface_mode == mode.edit:
-                        x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
-                        data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord + 1, y_gcoord)
+                        if pygame.key.get_pressed()[pygame.K_LALT]:
+                            for data_no, (x_gcoord, y_gcoord) in enumerate(data_gcoord[edit_seriesNo_itemNo[0]]):
+                                data_gcoord[edit_seriesNo_itemNo[0]][data_no] = (x_gcoord + 1, y_gcoord)
+                        else:
+                            x_gcoord, y_gcoord = data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]]
+                            data_gcoord[edit_seriesNo_itemNo[0]][edit_seriesNo_itemNo[1]] = (x_gcoord + 1, y_gcoord)
 
                 elif event.key == pygame.K_DELETE:
                     if interface_mode == mode.edit:
