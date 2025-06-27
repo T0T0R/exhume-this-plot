@@ -191,7 +191,7 @@ def analyze_picture(filename):
         
         # This line takes too much time! 
         #surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
-        
+
         surface=screen
 
         if marker_type == marker.circle:
@@ -316,7 +316,7 @@ def analyze_picture(filename):
     def export_data():
         """Export data x and y values in a file."""
         for i, data_array in enumerate(data_coord):
-            numpy.savetxt(filename + "_" + str(i) + ".csv", data_array, delimiter='\t', comments='', fmt='%1.7f', header="X\t+-\tY\t+-")
+            numpy.savetxt(filename + "_" + str(i) + ".csv", data_array[data_array[:, 0].argsort()], delimiter='\t', comments='', fmt='%1.7f', header="X\t+-\tY\t+-")
 
 
     def save():
