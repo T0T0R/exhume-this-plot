@@ -189,7 +189,10 @@ def analyze_picture(filename):
     def draw_single_marker_surface(marker_size, zoom_factor, marker_type, center_pos, col, width=0):
         """"Return a surface containing the marker shape."""
         
-        surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
+        # This line takes too much time! 
+        #surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
+        
+        surface=screen
 
         if marker_type == marker.circle:
             pygame.draw.circle(surface, col, center_pos, marker_size * zoom_factor, width)
@@ -214,7 +217,7 @@ def analyze_picture(filename):
             bottom_pos     = (center_pos[0], center_pos[1] + marker_size * zoom_factor)
             pygame.draw.polygon(surface, col, [right_pos, bottom_pos, left_pos], width)
 
-        return surface
+        #return surface
 
 
     def draw_marker(screen, zoom_factor, screen_gcoord, coord, col, marker_size, marker_type, width=0, position=False):
@@ -227,7 +230,7 @@ def analyze_picture(filename):
             center_pos = pygame.Vector2(coord) - pygame.Vector2(1,1)*marker_size*zoom_factor
             
         marker_surface = draw_single_marker_surface(marker_size, zoom_factor, marker_type, center_pos, col, width)
-        screen.blit(marker_surface, (0,0))
+        #screen.blit(marker_surface, (0,0))
         
         
 
